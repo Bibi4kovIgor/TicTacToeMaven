@@ -1,5 +1,18 @@
 package gameplay;
 
+import data.GameStates;
+import data.Sign;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 import static data.GameStates.TIE;
 import static data.GameStates.WINNER_X;
 import static data.Sign.CROSS;
@@ -8,19 +21,11 @@ import static draw.Draw.drawField;
 import static gameplay.TestUtils.textToArray;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import data.GameStates;
-import data.Sign;
-import org.junit.jupiter.api.Test;
-import java.io.IOException;
-
-
-
 
 class GamePlayTest {
 
-    @Test
-    void checkGameState() {
-    }
+    @Mock
+    private static Scanner scanner;
 
     @Test
     void game_FillsFieldWithSignsChecksWinner_Field3X3_ReturnTie(){
@@ -79,8 +84,25 @@ class GamePlayTest {
 
     }
 
+    @Test
+    void game_inputValues_checkInputX_returnTrue() {
+        final int SIZE = 3;
+        System.setIn(new ByteArrayInputStream("X\n1 1\n0 0\n1 1\n".getBytes(StandardCharsets.UTF_8)));
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GamePlay gamePlay = new GamePlay(SIZE);
+        gamePlay.game();
+        System.setOut(new PrintStream(byteArrayOutputStream));
+        String result = byteArrayOutputStream.toString();
+
+        Sign expected = CROSS;
 
 
 
 
+
+
+        assertEquals(true, true);
+
+
+    }
 }

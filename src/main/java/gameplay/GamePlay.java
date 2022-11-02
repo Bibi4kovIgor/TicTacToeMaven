@@ -14,7 +14,7 @@ import static draw.Draw.drawField;
 import static java.lang.System.exit;
 
 public class GamePlay {
-    public static final String INPUT_SIGN_WELCOME = "Input sign or q (Q) for exit: ";
+    public static final String INPUT_SIGN_WELCOME = "Input sign [X | 0] (X default if any) or q (Q) for exit: ";
     public static final String INPUT_COORDINATES_X_Y = "Input coordinates [row,column] for %c\n";
     public static final String WRONG_INPUT_PARAMETERS =
             "Wrong coordinates parameters";
@@ -23,16 +23,19 @@ public class GamePlay {
 
     private final Sign[][] field;
     private final Integer size;
+    private final Scanner scanner;
 
     public GamePlay(Integer size) {
         this.size = size;
         field = new Sign[size][size];
+        scanner = new Scanner(System.in);
         initializeWithEmpties();
     }
 
     public GamePlay(Sign[][] field, Integer size) {
         this.size = size;
         this.field = field;
+        scanner = new Scanner(System.in);
     }
 
     private void initializeWithEmpties() {
@@ -135,7 +138,7 @@ public class GamePlay {
         return true;
     }
 
-    public boolean inputTurnsCoordinates(int x, int y, Sign sign) {
+    private boolean inputTurnsCoordinates(int x, int y, Sign sign) {
         if (x >= size || x < 0 || y >= size || y < 0) {
             return false;
         }
@@ -148,11 +151,9 @@ public class GamePlay {
         return true;
     }
 
-    private int[] inputValues(Sign sign) {
-        Scanner scanner = new Scanner(System.in);
+    private int[] inputValues() {
         int[] inputArray = new int[2];
         try {
-            System.out.printf(INPUT_COORDINATES_X_Y, sign.getSign1());
             scanner.useDelimiter("\\s|,|\\n");
             inputArray[0] = scanner.nextInt();
             inputArray[1] = scanner.nextInt();
@@ -170,7 +171,7 @@ public class GamePlay {
         Sign sign = getSignFromInput();
 
         do {
-            int[] coordinates = inputValues(sign);
+            int[] coordinates = inputValues();
             int x = coordinates[0];
             int y = coordinates[1];
             if (!inputTurnsCoordinates(x, y, sign)) {
@@ -196,19 +197,16 @@ public class GamePlay {
     }
 
     private Sign getSignFromInput() {
-        System.out.print(INPUT_SIGN_WELCOME);
 
-        final Scanner scanner = new Scanner(System.in);
-        final String input = scanner.next();
-        final Sign sign = getSign(input.charAt(0));
+        System.out.print(INPUT_SIGN_WELCOME);
+        Sign sign;
+
+        final String input = scanner.hasNext("X|x|0|o|O") ? scanner.next() : "X";
+        sign = getSign(input.charAt(0));
+        System.out.printf(INPUT_COORDINATES_X_Y, sign.getSign1());
 
         if (Objects.equals(sign, QUIT)) {
             exit(0);
-        }
-
-        if (Objects.equals(sign, EMPTY)) {
-            printCurrentGameState(WRONG_INPUT_PARAMETERS_SET_X);
-            return CROSS;
         }
 
         return sign;
