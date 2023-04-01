@@ -96,13 +96,7 @@ class GamePlayTest {
 
         Sign expected = CROSS;
 
-
-
-
-
-
         assertEquals(true, true);
-
 
     }
 }

@@ -9,7 +9,7 @@ final public class Draw {
             System.out.printf("|-%d-", i);
             for (int j = 0; j < field.length; j++) {
                 System.out.print("| ");
-                System.out.print(field[i][j].getSign1());
+                System.out.print(field[i][j].getSign());
                 System.out.print(" ");
             }
             System.out.println("|");

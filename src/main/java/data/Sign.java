@@ -3,31 +3,27 @@ package data;
 import java.util.Objects;
 
 public enum Sign {
-    CROSS('X', 'x'),
-    ZERO('0', 'O'),
-    EMPTY('\u0020', ' '),
-    QUIT('Q', 'q');
+    CROSS('X'),
+    ZERO('0'),
+    EMPTY(' '),
+    QUIT('Q');
 
-    private final char sign1;
-    private final char sign2;
+    private final char sign;
 
-    Sign(char sign1, char sign2 ) {
-        this.sign1 = sign1;
-        this.sign2 = sign2;
+    Sign(char sign) {
+        this.sign = sign;
+
     }
 
-    public char getSign1() {
-        return sign1;
+    public char getSign() {
+        return sign;
     }
 
-    public char getSign2() {
-        return sign2;
-    }
 
     public static Sign getSign(char sign) {
         return switch (sign) {
             case 'X', 'x' -> CROSS;
-            case '0', 'O' -> ZERO;
+            case '0', 'O', 'o' -> ZERO;
             case 'Q', 'q' -> QUIT;
             default -> EMPTY;
         };
