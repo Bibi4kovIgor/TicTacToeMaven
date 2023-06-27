@@ -1,7 +1,7 @@
 package gameplay;
 
 import data.GameStates;
-import data.Sign;
+import data.CellState;
 
 import java.util.Arrays;
 import java.util.InputMismatchException;
@@ -9,26 +9,33 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import static data.GameStates.*;
-import static data.Sign.*;
+import static data.CellState.*;
 import static draw.Draw.drawField;
 import static java.lang.System.exit;
 
 public class GamePlay {
-    public static final String INPUT_SIGN_WELCOME = "Input sign [X | 0] (X default if any) or q (Q) for exit: ";
-    public static final String INPUT_COORDINATES_X_Y = "Input coordinates [row,column] for %c\n";
-    public static final String WRONG_INPUT_PARAMETERS =
+    private static final String INPUT_SIGN_WELCOME =
+            "Input sign [X | 0] (X default if any) or q (Q) for exit: ";
+    private static final String INPUT_COORDINATES_X_Y =
+            "Input coordinates [row,column] for %c\n";
+    private static final String WRONG_INPUT_PARAMETERS =
             "Wrong coordinates parameters";
-    private final Sign[][] field;
+
+    private static final String QUIT = "q";
+    public static final String SIGN_PATTERN = "[Xx0oOQq]";
+    private final CellState[][] field;
     private final Integer size;
+
+    private int signQuant;
 
 
     public GamePlay(Integer size) {
         this.size = size;
-        field = new Sign[size][size];
+        field = new CellState[size][size];
         initializeWithEmpties();
     }
 
-    public GamePlay(Sign[][] field, Integer size) {
+    public GamePlay(CellState[][] field, Integer size) {
         this.size = size;
         this.field = field;
     }
@@ -41,16 +48,16 @@ public class GamePlay {
         }
     }
 
-    private GameStates getWinner(Sign sign) {
-        return sign == CROSS ? WINNER_X : WINNER_0;
+    private GameStates getWinner(CellState cellState) {
+        return cellState == CROSS ? WINNER_X : WINNER_0;
     }
 
-    public GameStates checkGameState(Sign sign) {
-        if (isHorizontalCompleted(sign)
-                || isMainDiagonalCompleted(sign)
-                || isSideDiagonalCompleted(sign)
-                || isVerticalCompleted(sign)) {
-            return getWinner(sign);
+    public GameStates checkGameState(CellState cellState) {
+        if (isHorizontalCompleted(cellState)
+                || isMainDiagonalCompleted(cellState)
+                || isSideDiagonalCompleted(cellState)
+                || isVerticalCompleted(cellState)) {
+            return getWinner(cellState);
         } else if (isTie()) {
             return TIE;
         }
@@ -58,40 +65,40 @@ public class GamePlay {
         return GAME_IS_CONTINUE;
     }
 
-    private boolean isArrayValuesEquals(Sign[] temp, Sign sign) {
-        for (Sign c : temp) {
-            if (c != sign) {
+    private boolean isArrayValuesEquals(CellState[] temp, CellState cellState) {
+        for (CellState c : temp) {
+            if (c != cellState) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isHorizontalCompleted(Sign sign) {
-        Sign[] line = new Sign[size];
+    private boolean isHorizontalCompleted(CellState cellState) {
+        CellState[] line = new CellState[size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (field[i][j] == sign) {
+                if (field[i][j] == cellState) {
                     line[j] = field[i][j];
                 }
             }
-            if (isArrayValuesEquals(line, sign)) {
+            if (isArrayValuesEquals(line, cellState)) {
                 return true;
             }
-            Arrays.fill(line, EMPTY);
+//            Arrays.fill(line, EMPTY);
         }
         return false;
     }
 
-    private boolean isVerticalCompleted(Sign sign) {
-        Sign[] column = new Sign[size];
+    private boolean isVerticalCompleted(CellState cellState) {
+        CellState[] column = new CellState[size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (field[j][i] == sign) {
+                if (field[j][i] == cellState) {
                     column[j] = field[j][i];
                 }
             }
-            if (isArrayValuesEquals(column, sign)) {
+            if (isArrayValuesEquals(column, cellState)) {
                 return true;
             }
             Arrays.fill(column, EMPTY);
@@ -99,18 +106,18 @@ public class GamePlay {
         return false;
     }
 
-    private boolean isMainDiagonalCompleted(Sign sign) {
+    private boolean isMainDiagonalCompleted(CellState cellState) {
         for (int i = 0; i < size; i++) {
-            if (field[i][i] != sign) {
+            if (field[i][i] != cellState) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean isSideDiagonalCompleted(Sign sign) {
+    private boolean isSideDiagonalCompleted(CellState cellState) {
         for (int i = 0; i < size; i++) {
-            if (field[i][size - i - 1] != sign) {
+            if (field[i][size - i - 1] != cellState) {
                 return false;
             }
         }
@@ -118,8 +125,8 @@ public class GamePlay {
     }
 
     private boolean isTie() {
-        for (Sign[] rows : field) {
-            for (Sign element : rows) {
+        for (CellState[] rows : field) {
+            for (CellState element : rows) {
                 if (element == EMPTY) {
                     return false;
                 }
@@ -128,13 +135,13 @@ public class GamePlay {
         return true;
     }
 
-    private boolean inputTurnsCoordinates(int x, int y, Sign sign) {
+    private boolean inputTurnsCoordinates(int x, int y, CellState cellState) {
         if (x >= size || x < 0 || y >= size || y < 0) {
             return false;
         }
 
         if (field[x][y] == EMPTY) {
-            field[x][y] = sign;
+            field[x][y] = cellState;
         } else {
             return false;
         }
@@ -154,45 +161,49 @@ public class GamePlay {
         return inputArray;
     }
 
-    private Sign inputSign() {
-        Sign sign;
+    private CellState inputSign() {
+        CellState cellState;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print(INPUT_SIGN_WELCOME);
-        final String input = scanner.hasNext("[Xx0oOQq]") ? scanner.next() : "X";
-        sign = getSign(input.charAt(0));
-        System.out.printf(INPUT_COORDINATES_X_Y, sign.getSign());
+        final String input = scanner.hasNext(SIGN_PATTERN) ? scanner.next() : CROSS.toString();
+        cellState = getSign(input.charAt(0));
 
-        if (Objects.equals(sign, QUIT)) {
+        if (Objects.equals(input, QUIT)) {
             exit(0);
         }
 
-        return sign;
+        return cellState;
     }
 
     public void game() {
         GameStates currentGameState = GAME_IS_CONTINUE;
 
         drawField(field);
+        System.out.print(INPUT_SIGN_WELCOME);
 
-        Sign sign = inputSign();
+        CellState cellState = inputSign();
+        System.out.printf(INPUT_COORDINATES_X_Y, cellState.getSign());
 
         do {
             int[] coordinates = inputCoordinates();
             int x = coordinates[0];
             int y = coordinates[1];
 
-            if (!inputTurnsCoordinates(x, y, sign)) {
+            if (!inputTurnsCoordinates(x, y, cellState)) {
                 printErrorCoordinatesMessage();
                 continue;
             }
+
             drawField(field);
 
-            currentGameState = checkGameState(sign);
+            signQuant++;
+            if(!isWinnerNotExist()) {
+                currentGameState = checkGameState(cellState);
+            }
 
-            sign = Sign.getOppositeSign(sign);
+            cellState = CellState.getOppositeSign(cellState);
 
-            printCurrentGameState(currentGameState.getGameStateMessage());
+            printCurrentGameState(String.format("%s %c", currentGameState.getGameStateMessage(), cellState.getSign()));
         } while (Objects.equals(currentGameState, GAME_IS_CONTINUE));
     }
 
@@ -202,6 +213,10 @@ public class GamePlay {
 
     private void printErrorCoordinatesMessage() {
         printCurrentGameState(WRONG_INPUT_PARAMETERS);
+    }
+
+    private boolean isWinnerNotExist(){
+        return signQuant < size * 2 - 1;
     }
 
 

@@ -2,15 +2,14 @@ package data;
 
 import java.util.Objects;
 
-public enum Sign {
+public enum CellState {
     CROSS('X'),
     ZERO('0'),
-    EMPTY(' '),
-    QUIT('Q');
+    EMPTY(' ');
 
     private final char sign;
 
-    Sign(char sign) {
+    CellState(char sign) {
         this.sign = sign;
 
     }
@@ -20,16 +19,15 @@ public enum Sign {
     }
 
 
-    public static Sign getSign(char sign) {
+    public static CellState getSign(char sign) {
         return switch (sign) {
             case 'X', 'x' -> CROSS;
             case '0', 'O', 'o' -> ZERO;
-            case 'Q', 'q' -> QUIT;
             default -> EMPTY;
         };
     }
 
-    public static Sign getOppositeSign(Sign sign) {
-        return Objects.equals(sign, CROSS) ? ZERO : CROSS;
+    public static CellState getOppositeSign(CellState cellState) {
+        return Objects.equals(cellState, CROSS) ? ZERO : CROSS;
     }
 }

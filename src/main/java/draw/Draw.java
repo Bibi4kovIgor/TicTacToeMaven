@@ -1,9 +1,9 @@
 package draw;
 
-import data.Sign;
+import data.CellState;
 
 final public class Draw {
-    public static void drawField(Sign[][] field) {
+    public static void drawField(CellState[][] field) {
         drawHorizontalCoordinates(field);
         for (int i = 0; i < field.length; i++) {
             System.out.printf("|-%d-", i);
@@ -16,7 +16,7 @@ final public class Draw {
         }
     }
 
-    private static void drawHorizontalCoordinates(Sign[][] field) {
+    private static void drawHorizontalCoordinates(CellState[][] field) {
         System.out.print("|---");
         for (int i = 0; i < field.length; i++) {
             System.out.printf("|-%d-", i);

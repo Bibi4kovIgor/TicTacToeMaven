@@ -1,22 +1,16 @@
 package gameplay;
 
+import data.CellState;
 import data.GameStates;
-import data.Sign;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.ByteBuffer;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
+import static data.CellState.CROSS;
+import static data.CellState.ZERO;
 import static data.GameStates.TIE;
 import static data.GameStates.WINNER_X;
-import static data.Sign.CROSS;
-import static data.Sign.ZERO;
 import static draw.Draw.drawField;
 import static gameplay.TestUtils.textToArray;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,15 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GamePlayTest {
 
-    @Mock
-    private static Scanner scanner;
 
     @Test
     void game_FillsFieldWithSignsChecksWinner_Field3X3_ReturnTie(){
         final int size = 3;
         //Arrange
 
-        Sign[][] field = new Sign[size][size];
+        CellState[][] field = new CellState[size][size];
 
         field[0][0] = CROSS;
         field[0][1] = ZERO;
@@ -50,7 +42,6 @@ class GamePlayTest {
 
         drawField(field);
 
-        GameStates expected = TIE;
         String expectedMessage = TIE.getGameStateMessage();
 
         // Act
@@ -58,7 +49,7 @@ class GamePlayTest {
         String actualMessage = gamePlay.checkGameState(CROSS).getGameStateMessage();
 
         // Assert
-        assertEquals(expected, actual, "Game state wrong");
+        assertEquals(TIE, actual, "Game state wrong");
         assertEquals(expectedMessage, actualMessage, "Game state message wrong");
     }
 
@@ -66,12 +57,11 @@ class GamePlayTest {
     void game_FillsFieldWithSignsChecksWinner_Field3X3_ReturnTie_LoadFile() throws IOException {
         // Arrange
         final int size = 3;
-        Sign[][] testArray = textToArray("test_data_cross_wins.txt", size);
+        CellState[][] testArray = textToArray("test_data_cross_wins.txt", size);
 
         GamePlay gamePlay = new GamePlay(testArray, size);
         drawField(testArray);
 
-        GameStates expected = WINNER_X;
         String expectedMessage = WINNER_X.getGameStateMessage();
 
         // Act
@@ -79,7 +69,7 @@ class GamePlayTest {
         String actualMessage = gamePlay.checkGameState(CROSS).getGameStateMessage();
 
         // Assert
-        assertEquals(expected, actual, "Game state wrong");
+        assertEquals(WINNER_X, actual, "Game state wrong");
         assertEquals(expectedMessage, actualMessage, "Game state message wrong");
 
     }
@@ -92,11 +82,8 @@ class GamePlayTest {
         GamePlay gamePlay = new GamePlay(SIZE);
         gamePlay.game();
         System.setOut(new PrintStream(byteArrayOutputStream));
-        String result = byteArrayOutputStream.toString();
 
-        Sign expected = CROSS;
-
-        assertEquals(true, true);
+        assertEquals(byteArrayOutputStream, byteArrayOutputStream);
 
     }
 }

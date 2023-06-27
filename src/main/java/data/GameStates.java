@@ -6,6 +6,7 @@ public enum GameStates {
     TIE("Tie!"),
     GAME_IS_CONTINUE("Waiting for your move: ");
 
+
     private final String gameStateMessage;
 
     GameStates(String gameState) {
